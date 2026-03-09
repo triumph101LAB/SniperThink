@@ -3,9 +3,9 @@ const cors = require("cors")
 const PORT = process.env.PORT || 4000
 const app = express()
 
-app.use(cors(
+app.use(cors({
     https://sniper-think-project.vercel.app/
-))
+}))
 app.use(express.json())
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 app.get('/', (req,res) =>{
