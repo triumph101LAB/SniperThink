@@ -27,6 +27,6 @@ app.post('/api/interested', (req,res)=>{
 })
 
 
-app.listen(PORT, () =>{
+app.listen(PORT,'0.0.0.0',() =>{
     console.log(`This server is running on PORT ${PORT}`)
 })
