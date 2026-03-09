@@ -4,7 +4,7 @@ const PORT = process.env.PORT || 4000
 const app = express()
 
 app.use(cors({
-    https://sniper-think-project.vercel.app/
+    origin: "https://sniper-think-project.vercel.app"
 }))
 app.use(express.json())
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
