@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
-import { motion } from "framer-motion";
 import { createPortal } from "react-dom";
+import { motion } from "framer-motion";
 import StepCard from "./StepCard";
 import ProgressIndicator from "./ProgressIndicator";
 import InterestModal from "./InterestModal";
@@ -14,23 +14,23 @@ const StrategySection = () => {
   const stepRefs = useRef([]);
 
   useEffect(() => {
-    const observers = steps.map((_, index) => {
+    const observers = steps.map((_, i) => {
       const observer = new IntersectionObserver(
-        ([entry]) => { if (entry.isIntersecting) setActiveStep(index); },
+        ([entry]) => { if (entry.isIntersecting) setActiveStep(i); },
         { threshold: 0.5 }
       );
-      if (stepRefs.current[index]) observer.observe(stepRefs.current[index]);
+      if (stepRefs.current[i]) observer.observe(stepRefs.current[i]);
       return observer;
     });
-    return () => observers.forEach((obs) => obs.disconnect());
+    return () => observers.forEach((o) => o.disconnect());
   }, []);
 
-  const handleInterestClick = (step) => {
+  const openModal = (step) => {
     setSelectedStep(step);
     document.body.style.overflow = "hidden";
   };
 
-  const handleModalClose = () => {
+  const closeModal = () => {
     setSelectedStep(null);
     document.body.style.overflow = "";
   };
@@ -57,11 +57,8 @@ const StrategySection = () => {
             >
               <span className="intro-eyebrow">{introData.eyebrow}</span>
               <h1 className="intro-headline">
-                {introData.headline.split("\n").map((line, i) => (
-                  <span key={i} className="intro-headline-line">
-                    {line}
-                    {i < introData.headline.split("\n").length - 1 && <br />}
-                  </span>
+                {introData.headline.split("\n").map((line, i, arr) => (
+                  <span key={i} className="intro-headline-line">{line}{i < arr.length - 1 && <br />}</span>
                 ))}
               </h1>
               <p className="intro-subtext">{introData.subtext}</p>
@@ -77,13 +74,9 @@ const StrategySection = () => {
             </motion.div>
 
             <div className="steps-list">
-              {steps.map((step, index) => (
-                <div
-                  key={step.id}
-                  ref={(el) => (stepRefs.current[index] = el)}
-                  className="step-wrapper"
-                >
-                  <StepCard step={step} index={index} onInterestClick={handleInterestClick} />
+              {steps.map((step, i) => (
+                <div key={step.id} ref={(el) => (stepRefs.current[i] = el)} className="step-wrapper">
+                  <StepCard step={step} index={i} onInterestClick={openModal} />
                 </div>
               ))}
             </div>
@@ -92,7 +85,7 @@ const StrategySection = () => {
       </section>
 
       {selectedStep && createPortal(
-        <InterestModal step={selectedStep} onClose={handleModalClose} />,
+        <InterestModal step={selectedStep} onClose={closeModal} />,
         document.body
       )}
     </>
