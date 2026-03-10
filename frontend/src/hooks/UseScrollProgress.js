@@ -1,17 +1,27 @@
 import { useRef, useState, useEffect } from "react";
-import { useScroll } from "framer-motion";
 
-// Runs off the main thread — no setState on every scroll tick
 export function useScrollProgress() {
   const ref = useRef(null);
-  const { scrollYProgress: progress } = useScroll({
-    target: ref,
-    offset: ["start end", "end start"],
-  });
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    const onScroll = () => {
+      const { top, height } = el.getBoundingClientRect();
+      const scrolled = window.innerHeight - top;
+      setProgress(Math.min(Math.max(scrolled / (window.innerHeight + height), 0), 1));
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   return { ref, progress };
 }
 
-// Fires once when element enters view, then disconnects
 export function useInView(threshold = 0.2) {
   const ref = useRef(null);
   const [inView, setInView] = useState(false);
@@ -26,6 +36,7 @@ export function useInView(threshold = 0.2) {
       },
       { threshold }
     );
+
     if (ref.current) observer.observe(ref.current);
     return () => observer.disconnect();
   }, [threshold]);
