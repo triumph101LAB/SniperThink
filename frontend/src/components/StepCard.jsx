@@ -4,16 +4,23 @@ import { useInView } from "../hooks/UseScrollProgress";
 
 const TRANSITION = { duration: 0.7, ease: [0.22, 1, 0.36, 1] };
 
-const cardVariants = {
-  analyze:    { hidden: { opacity: 0, x: -80, skewX: -5 }, visible: { opacity: 1, x: 0, skewX: 0, transition: TRANSITION } },
-  automate:   { hidden: { opacity: 0, y: 80, scale: 0.92 }, visible: { opacity: 1, y: 0, scale: 1, transition: TRANSITION } },
-  accelerate: { hidden: { opacity: 0, x: 80, skewX: 5 },   visible: { opacity: 1, x: 0, skewX: 0, transition: TRANSITION } },
+const getCardVariants = (id) => {
+  const mobile = window.innerWidth < 600;
+  const variants = {
+    analyze:    { hidden: { opacity: 0, x: -80, skewX: -5 }, visible: { opacity: 1, x: 0, skewX: 0 } },
+    automate:   { hidden: { opacity: 0, y: 80, scale: 0.92 }, visible: { opacity: 1, y: 0, scale: 1 } },
+    accelerate: mobile
+      ? { hidden: { opacity: 0, y: 80, scale: 0.92 }, visible: { opacity: 1, y: 0, scale: 1 } }
+      : { hidden: { opacity: 0, x: 80, skewX: 5 },   visible: { opacity: 1, x: 0, skewX: 0 } },
+  };
+  const v = variants[id] || variants.analyze;
+  return { hidden: v.hidden, visible: { ...v.visible, transition: TRANSITION } };
 };
 
 const StepCard = ({ step, onInterestClick }) => {
   const { ref, inView } = useInView(0.25);
   const [hovered, setHovered] = useState(false);
-  const variant = cardVariants[step.id] || cardVariants.analyze;
+  const variant = getCardVariants(step.id);
   const ctaBg = `linear-gradient(135deg, ${step.color}, ${step.id === "automate" ? "#d45520" : "#1a9e9e"})`;
 
   return (
